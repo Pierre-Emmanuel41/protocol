@@ -9,21 +9,21 @@ import fr.pederobien.utils.ByteWrapper;
 import fr.pederobien.utils.ReadableByteWrapper;
 
 public class Request implements IRequest {
-	private float version;
-	private IErrorCodeFactory factory;
-	private int identifier;
+	private final float version;
+	private final IErrorCodeFactory factory;
+	private final int identifier;
 	private int errorCode;
 	private Object value;
-	private IWrapper wrapper;
+	private final IWrapper wrapper;
 
 	/**
 	 * Creates a message to send to the remote.
 	 * 
 	 * @param version   The protocol version.
 	 * @param factory   The factory to get the message associated to the error code.
+	 * @param identifier The request identifier.
 	 * @param errorCode The request error code.
-	 * @param config    The request configuration that contains the request
-	 *                  identifier and the generator/parser to send/parse data.
+	 * @param wrapper    The request wrapper that contains the bytes generator and parser.
 	 */
 	public Request(float version, IErrorCodeFactory factory, int identifier, int errorCode, IWrapper wrapper) {
 		this.version = version;

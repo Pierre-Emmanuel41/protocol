@@ -10,9 +10,9 @@ import fr.pederobien.protocol.interfaces.IWrapper;
 import fr.pederobien.utils.ReadableByteWrapper;
 
 public class Protocol implements IProtocol {
-	private float version;
-	private Map<Integer, RequestConfig> configs;
-	private IErrorCodeFactory factory;
+	private final float version;
+	private final Map<Integer, RequestConfig> configs;
+	private final IErrorCodeFactory factory;
 
 	/**
 	 * Creates a protocol associated to a specific version.
@@ -42,7 +42,7 @@ public class Protocol implements IProtocol {
 	 * 
 	 * @param identifier The identifier of the request to create.
 	 * 
-	 * @return The created request if the identifier is supported, false otherwise.
+	 * @return The created request if the identifier is supported, null otherwise.
 	 */
 	public IRequest get(int identifier) {
 		return generateRequest(identifier);
@@ -83,37 +83,34 @@ public class Protocol implements IProtocol {
 		if (config == null)
 			return null;
 
-		return new Request(version, factory, config.getIdentifier(), 0, config.getWrapper());
+		return new Request(version, factory, config.identifier(), 0, config.wrapper());
 	}
 
-	private class RequestConfig {
-		private int identifier;
-		private IWrapper wrapper;
-
+	private record RequestConfig(int identifier, IWrapper wrapper) {
 		/**
 		 * Creates a request configuration.
-		 * 
+		 *
 		 * @param identifier The request identifier.
 		 * @param wrapper    The wrapper that parse/generates a bytes array from an
 		 *                   object payload.
 		 */
-		public RequestConfig(int identifier, IWrapper wrapper) {
-			this.identifier = identifier;
-			this.wrapper = wrapper;
+		private RequestConfig {
 		}
 
-		/**
-		 * @return The request identifier.
-		 */
-		public int getIdentifier() {
-			return identifier;
-		}
+			/**
+			 * @return The request identifier.
+			 */
+			@Override
+			public int identifier() {
+				return identifier;
+			}
 
-		/**
-		 * @return The payload wrapper.
-		 */
-		public IWrapper getWrapper() {
-			return wrapper;
+			/**
+			 * @return The payload wrapper.
+			 */
+			@Override
+			public IWrapper wrapper() {
+				return wrapper;
+			}
 		}
-	}
 }

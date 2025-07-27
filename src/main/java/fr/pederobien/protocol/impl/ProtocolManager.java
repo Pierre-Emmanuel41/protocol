@@ -13,8 +13,8 @@ import fr.pederobien.protocol.interfaces.IRequest;
 import fr.pederobien.utils.ReadableByteWrapper;
 
 public class ProtocolManager implements IProtocolManager {
-	private NavigableMap<Float, Protocol> protocols;
-	private IErrorCodeFactory factory;
+	private final NavigableMap<Float, Protocol> protocols;
+	private final IErrorCodeFactory factory;
 
 	/**
 	 * Creates a protocol manager to insure the backward compatibility.
@@ -67,9 +67,9 @@ public class ProtocolManager implements IProtocolManager {
 		return factory;
 	}
 
-	private class ErrorCodeFactory implements IErrorCodeFactory {
+	private static class ErrorCodeFactory implements IErrorCodeFactory {
 		private static final String NOT_SUPPORTED = "CODE_NOT_SUPPORTED";
-		private Map<Integer, String> errorCodes;
+		private final Map<Integer, String> errorCodes;
 
 		public ErrorCodeFactory() {
 			errorCodes = new HashMap<Integer, String>();

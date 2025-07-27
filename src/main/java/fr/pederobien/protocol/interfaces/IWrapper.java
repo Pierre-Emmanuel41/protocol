@@ -3,7 +3,7 @@ package fr.pederobien.protocol.interfaces;
 public interface IWrapper {
 
 	/**
-	 * From the the input object returns an array of bytes.
+	 * From the input object returns an array of bytes.
 	 * 
 	 * @param value The object from which an array of bytes is created.
 	 * 

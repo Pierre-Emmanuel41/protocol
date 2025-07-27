@@ -8,7 +8,7 @@ This project propose an easy way to define how data can be exchanged between a c
 First you need to download this project on your computer. To do so, you can use the following command line:
 
 ```git
-git clone https://github.com/Pierre-Emmanuel41/messenger.git
+git clone https://github.com/Pierre-Emmanuel41/protocol.git
 ```
 
 Executing the batch file <code>deploy.bat</code> will download each dependency and build everything. Finally, you can add the project as maven dependency to your maven project :

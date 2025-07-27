@@ -3,10 +3,10 @@ package fr.pederobien.protocol.testing;
 import java.util.StringJoiner;
 
 public class Entity {
-	private String type;
-	private String name;
-	private int age;
-	private String city;
+	private final String type;
+	private final String name;
+	private final int age;
+	private final String city;
 
 	/**
 	 * Creates an entity.
@@ -66,11 +66,11 @@ public class Entity {
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
-		if (!(obj instanceof Entity))
+
+		if (!(obj instanceof Entity other))
 			return false;
 
-		Entity other = (Entity) obj;
-		return type.equals(other.type) && name.equals(other.name) && age == other.age && city.equals(other.city);
+        return type.equals(other.type) && name.equals(other.name) && age == other.age && city.equals(other.city);
 	}
 
 	@Override
