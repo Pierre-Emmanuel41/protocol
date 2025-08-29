@@ -33,6 +33,12 @@ public class Protocol implements IProtocol {
 
 	@Override
 	public void register(int identifier, IWrapper wrapper) {
+		IWrapper registered = wrappers.get(identifier);
+
+		// Check if there is a wrapper registered for the given identifier
+		if (registered != null)
+			throw new IllegalArgumentException("Cannot register a wrapper for the given identifier, a wrapper already exist");
+
 		wrappers.put(identifier, wrapper);
 	}
 
