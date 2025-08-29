@@ -11,7 +11,7 @@ import fr.pederobien.utils.ReadableByteWrapper;
 
 public class Protocol implements IProtocol {
 	private final float version;
-	private final Map<Integer, RequestConfig> configs;
+	private final Map<Integer, IWrapper> wrappers;
 	private final IErrorCodeFactory factory;
 
 	/**
@@ -23,7 +23,7 @@ public class Protocol implements IProtocol {
 		this.version = version;
 		this.factory = factory;
 
-		configs = new HashMap<Integer, RequestConfig>();
+		wrappers = new HashMap<Integer, IWrapper>();
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class Protocol implements IProtocol {
 
 	@Override
 	public void register(int identifier, IWrapper wrapper) {
-		configs.put(identifier, new RequestConfig(identifier, wrapper));
+		wrappers.put(identifier, wrapper);
 	}
 
 	/**
@@ -77,40 +77,12 @@ public class Protocol implements IProtocol {
 	 * @return The created request.
 	 */
 	private Request generateRequest(int identifier) {
-		RequestConfig config = configs.get(identifier);
+		IWrapper wrapper = wrappers.get(identifier);
 
 		// Check if identifier is supported
-		if (config == null)
+		if (wrapper == null)
 			return null;
 
-		return new Request(version, factory, config.identifier(), 0, config.wrapper());
+		return new Request(version, factory, identifier, 0, wrapper);
 	}
-
-	private record RequestConfig(int identifier, IWrapper wrapper) {
-		/**
-		 * Creates a request configuration.
-		 *
-		 * @param identifier The request identifier.
-		 * @param wrapper    The wrapper that parse/generates a bytes array from an
-		 *                   object payload.
-		 */
-		private RequestConfig {
-		}
-
-			/**
-			 * @return The request identifier.
-			 */
-			@Override
-			public int identifier() {
-				return identifier;
-			}
-
-			/**
-			 * @return The payload wrapper.
-			 */
-			@Override
-			public IWrapper wrapper() {
-				return wrapper;
-			}
-		}
 }
