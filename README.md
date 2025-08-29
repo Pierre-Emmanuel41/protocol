@@ -8,7 +8,7 @@ This project propose an easy way to define how data can be exchanged between a c
 First you need to download this project on your computer. To do so, you can use the following command line:
 
 ```git
-git clone https://github.com/Pierre-Emmanuel41/messenger.git
+git clone https://github.com/Pierre-Emmanuel41/protocol.git
 ```
 
 Executing the batch file <code>deploy.bat</code> will download each dependency and build everything. Finally, you can add the project as maven dependency to your maven project :
@@ -59,20 +59,23 @@ byte[] data = request.getBytes();
 // Request structure:
 // Byte 0 -> 3: Protocol version number
 // Byte 4 -> 7: Request identifier
-// Byte 8 -> 11: Payload length
-// Byte 12 -> 12 + length: Payload
-formatter = "Bytes with protocol 1.0: %s";
-System.out.println(String.format(formatter, ByteWrapper.wrap(data)));
+// Byte 8 -> 11: Error code
+// Byte 12 -> 15: Payload length
+// Byte 16 -> 16 + length: Payload
+formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
+System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
 
 // Simulating a request being received from the remote
 IRequest received = manager.parse(data);
 if (received.getIdentifier() == identifier && received.getPayload().equals(payload)) {
-	System.out.println("Received request match the sent request for protocol 1.0");
+    System.out.println("Received request match the sent request for protocol 1.0");
 } else
-	System.out.println("An issue occured");
+    System.out.println("An issue occurred");
 
 // Simulating an evolution of the Entity properties (field city added)
 IProtocol protocol20 = manager.getOrCreate(2.0f);
+
+identifier = 2;
 
 // The protocol 2.0 supports the request identifier 1
 // When an array of bytes needs to be parsed, the protocol version is extracted
@@ -87,39 +90,40 @@ protocol20.register(identifier, new EntityWrapperV20());
 // Getting the request associated to the latest protocol: 2.0
 request = manager.get(identifier);
 
-payload = new Entity("PNJ", "Davy", 60, "Sea");
+payload = new Entity("Player", "Jack", 30, "Sea");
 request.setPayload(payload);
 
 // Request structure:
 // Byte 0 -> 3: Protocol version number
 // Byte 4 -> 7: Request identifier
-// Byte 8 -> 11: Payload length
-// Byte 12 -> 12 + length: Payload
+// Byte 8 -> 11: Error code
+// Byte 12 -> 15: Payload length
+// Byte 16 -> 16 + length: Payload
 formatter = "Request with protocol 2.0: %s";
 System.out.println(String.format(formatter, request));
 
-// Simulating e request being sent to the remote
+// Simulating a request being sent to the remote
 data = request.getBytes();
 
-formatter = "Bytes with protocol 2.0: %s";
-System.out.println(String.format(formatter, ByteWrapper.wrap(data)));
+formatter = "Bytes with protocol 2.0: %s, size in bytes: %s";
+System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
 
 // Simulating a request being received from the remote
 received = manager.parse(data);
 if (received.getIdentifier() == identifier && received.getPayload().equals(payload)) {
-	System.out.println("Received request match the sent request for protocol 2.0");
+    System.out.println("Received request match the sent request for protocol 2.0");
 } else
-	System.out.println("An issue occured");
+    System.out.println("An issue occurred");
 ```
 
-Output:
+The Output:
 
 ```
 Request with protocol 1.0: {identifier=1,errorCode=[value=0,message=No Error],payload={type=Player,name=Jack,age=30,city=Not defined}}
-Bytes with protocol 1.0: [63,-128,0,0,0,0,0,1,0,0,0,0,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30]
+Bytes with protocol 1.0: [63,-128,0,0,0,0,0,1,0,0,0,0,0,0,0,22,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30], size in bytes: 38
 Received request match the sent request for protocol 1.0
-Request with protocol 2.0: {identifier=1,errorCode=[value=0,message=No Error],payload={type=PNJ,name=Davy,age=60,city=Sea}}
-Bytes with protocol 2.0: [64,0,0,0,0,0,0,1,0,0,0,0,0,0,0,3,80,78,74,0,0,0,4,68,97,118,121,0,0,0,60,0,0,0,3,83,101,97]
+Request with protocol 2.0: {identifier=2,errorCode=[value=0,message=No Error],payload={type=Player,name=Jack,age=30,city=Sea}}
+Bytes with protocol 2.0: [64,0,0,0,0,0,0,2,0,0,0,0,0,0,0,29,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30,0,0,0,3,83,101,97], size in bytes: 45
 Received request match the sent request for protocol 2.0
 ```
 

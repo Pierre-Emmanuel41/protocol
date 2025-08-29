@@ -10,9 +10,9 @@ import fr.pederobien.protocol.interfaces.IWrapper;
 import fr.pederobien.utils.ReadableByteWrapper;
 
 public class Protocol implements IProtocol {
-	private float version;
-	private Map<Integer, RequestConfig> configs;
-	private IErrorCodeFactory factory;
+	private final float version;
+	private final Map<Integer, IWrapper> wrappers;
+	private final IErrorCodeFactory factory;
 
 	/**
 	 * Creates a protocol associated to a specific version.
@@ -23,7 +23,7 @@ public class Protocol implements IProtocol {
 		this.version = version;
 		this.factory = factory;
 
-		configs = new HashMap<Integer, RequestConfig>();
+		wrappers = new HashMap<Integer, IWrapper>();
 	}
 
 	@Override
@@ -33,7 +33,13 @@ public class Protocol implements IProtocol {
 
 	@Override
 	public void register(int identifier, IWrapper wrapper) {
-		configs.put(identifier, new RequestConfig(identifier, wrapper));
+		IWrapper registered = wrappers.get(identifier);
+
+		// Check if there is a wrapper registered for the given identifier
+		if (registered != null)
+			throw new IllegalArgumentException("Cannot register a wrapper for the given identifier, a wrapper already exist");
+
+		wrappers.put(identifier, wrapper);
 	}
 
 	/**
@@ -42,7 +48,7 @@ public class Protocol implements IProtocol {
 	 * 
 	 * @param identifier The identifier of the request to create.
 	 * 
-	 * @return The created request if the identifier is supported, false otherwise.
+	 * @return The created request if the identifier is supported, null otherwise.
 	 */
 	public IRequest get(int identifier) {
 		return generateRequest(identifier);
@@ -77,43 +83,12 @@ public class Protocol implements IProtocol {
 	 * @return The created request.
 	 */
 	private Request generateRequest(int identifier) {
-		RequestConfig config = configs.get(identifier);
+		IWrapper wrapper = wrappers.get(identifier);
 
 		// Check if identifier is supported
-		if (config == null)
+		if (wrapper == null)
 			return null;
 
-		return new Request(version, factory, config.getIdentifier(), 0, config.getWrapper());
-	}
-
-	private class RequestConfig {
-		private int identifier;
-		private IWrapper wrapper;
-
-		/**
-		 * Creates a request configuration.
-		 * 
-		 * @param identifier The request identifier.
-		 * @param wrapper    The wrapper that parse/generates a bytes array from an
-		 *                   object payload.
-		 */
-		public RequestConfig(int identifier, IWrapper wrapper) {
-			this.identifier = identifier;
-			this.wrapper = wrapper;
-		}
-
-		/**
-		 * @return The request identifier.
-		 */
-		public int getIdentifier() {
-			return identifier;
-		}
-
-		/**
-		 * @return The payload wrapper.
-		 */
-		public IWrapper getWrapper() {
-			return wrapper;
-		}
+		return new Request(version, factory, identifier, 0, wrapper);
 	}
 }
