@@ -27,9 +27,9 @@ public interface IRequest {
 	/**
 	 * Set the payload object to sent/received from the remote.
 	 * 
-	 * @param value The payload value.
+	 * @param payload The payload of the request.
 	 */
-	void setPayload(Object value);
+	void setPayload(Object payload);
 
 	/**
 	 * @return The payload object of this request.

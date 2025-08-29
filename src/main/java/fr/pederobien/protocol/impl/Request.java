@@ -13,7 +13,7 @@ public class Request implements IRequest {
 	private final IErrorCodeFactory factory;
 	private final int identifier;
 	private int errorCode;
-	private Object value;
+	private Object payload;
 	private final IWrapper wrapper;
 
 	/**
@@ -54,13 +54,13 @@ public class Request implements IRequest {
 	}
 
 	@Override
-	public void setPayload(Object value) {
-		this.value = value;
+	public void setPayload(Object payload) {
+		this.payload = payload;
 	}
 
 	@Override
 	public Object getPayload() {
-		return value;
+		return payload;
 	}
 
 	@Override
@@ -76,8 +76,14 @@ public class Request implements IRequest {
 		// Byte 8 -> 11: Error code
 		byteWrapper.putInt(errorCode);
 
+		// Getting the bytes array equivalent to the payload object
+		byte[] data = wrapper.getBytes(payload);
+
+		// Bytes 12 -> 15: Payload length
+		byteWrapper.putInt(data.length);
+
 		// Byte 12 -> end: Request payload
-		byteWrapper.put(wrapper.getBytes(value));
+		byteWrapper.put(data);
 
 		return byteWrapper.get();
 	}
@@ -90,7 +96,7 @@ public class Request implements IRequest {
 		String formatter = "errorCode=[value=%s,message=%s]";
 		joiner.add(String.format(formatter, getErrorCode(), factory.getMessage(getErrorCode())));
 
-		joiner.add("payload=" + value);
+		joiner.add("payload=" + payload);
 		return joiner.toString();
 	}
 
@@ -107,8 +113,11 @@ public class Request implements IRequest {
 		// Byte 0 -> 3: Error code
 		errorCode = byteWrapper.nextInt();
 
-		// Byte 4 -> end: payload
-		value = wrapper.parse(byteWrapper.next(-1));
+		// Byte 4 -> 7: Payload length
+		int length = byteWrapper.nextInt();
+
+		// Byte 8 -> 8 + length: payload
+		payload = wrapper.parse(byteWrapper.next(length));
 
 		return this;
 	}
