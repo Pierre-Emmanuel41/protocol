@@ -34,7 +34,7 @@ public class ProtocolTest {
         request.setPayload(payload);
 
         String formatter = "Request with protocol 1.0: %s";
-        System.out.printf(formatter + "%n", request);
+        System.out.println(String.format(formatter, request));
 
         // Simulating a request being sent to the remote
         byte[] data = request.getBytes();
@@ -42,10 +42,11 @@ public class ProtocolTest {
         // Request structure:
         // Byte 0 -> 3: Protocol version number
         // Byte 4 -> 7: Request identifier
-        // Byte 8 -> 11: Payload length
-        // Byte 12 -> 12 + length: Payload
-        formatter = "Bytes with protocol 1.0: %s";
-        System.out.printf(formatter + "%n", ByteWrapper.wrap(data));
+        // Byte 8 -> 11: Error code
+        // Byte 12 -> 15: Payload length
+        // Byte 16 -> 16 + length: Payload
+        formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
+        System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
 
         // Simulating a request being received from the remote
         IRequest received = manager.parse(data);
@@ -56,6 +57,8 @@ public class ProtocolTest {
 
         // Simulating an evolution of the Entity properties (field city added)
         IProtocol protocol20 = manager.getOrCreate(2.0f);
+
+        identifier = 2;
 
         // The protocol 2.0 supports the request identifier 1
         // When an array of bytes needs to be parsed, the protocol version is extracted
@@ -70,22 +73,23 @@ public class ProtocolTest {
         // Getting the request associated to the latest protocol: 2.0
         request = manager.get(identifier);
 
-        payload = new Entity("PNJ", "Davy", 60, "Sea");
+        payload = new Entity("Player", "Jack", 30, "Sea");
         request.setPayload(payload);
 
         // Request structure:
         // Byte 0 -> 3: Protocol version number
         // Byte 4 -> 7: Request identifier
-        // Byte 8 -> 11: Payload length
-        // Byte 12 -> 12 + length: Payload
+        // Byte 8 -> 11: Error code
+        // Byte 12 -> 15: Payload length
+        // Byte 16 -> 16 + length: Payload
         formatter = "Request with protocol 2.0: %s";
-        System.out.printf(formatter + "%n", request);
+        System.out.println(String.format(formatter, request));
 
-        // Simulating e request being sent to the remote
+        // Simulating a request being sent to the remote
         data = request.getBytes();
 
-        formatter = "Bytes with protocol 2.0: %s";
-        System.out.printf(formatter + "%n", ByteWrapper.wrap(data));
+        formatter = "Bytes with protocol 2.0: %s, size in bytes: %s";
+        System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
 
         // Simulating a request being received from the remote
         received = manager.parse(data);
