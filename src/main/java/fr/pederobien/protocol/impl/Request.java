@@ -79,7 +79,7 @@ public class Request implements IRequest {
 		// Getting the bytes array equivalent to the payload object
 		byte[] data = wrapper.getBytes(payload);
 
-		// Bytes 12 -> 15: Payload length
+		// Byte 12 -> 15: Payload length
 		byteWrapper.putInt(data.length);
 
 		// Byte 12 -> end: Request payload
@@ -103,9 +103,10 @@ public class Request implements IRequest {
 	/**
 	 * Parse the content of the input wrapper. The input array shall have the
 	 * following format:<br>
-	 * <br>
-	 * Byte 0 -> 3: Error code<br>
-	 * Byte 4 -> end: Payload<br>
+	 *
+	 * Byte 0 -> 3: Error code
+	 * Byte 4 -> 7: Payload length
+	 * Byte 8 -> 8 + length: payload
 	 * 
 	 * @param byteWrapper The wrapper that contains request information.
 	 */

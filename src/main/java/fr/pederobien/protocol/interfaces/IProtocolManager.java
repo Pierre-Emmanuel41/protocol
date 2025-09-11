@@ -24,11 +24,12 @@ public interface IProtocolManager {
 	/**
 	 * Parse the given bytes array. The input array shall have the following
 	 * format:<br>
-	 * 
+	 *
 	 * Byte 0 -> 3: Protocol version<br>
-	 * Byte 4 -> 7: message identifier<br>
+	 * Byte 4 -> 7: Request identifier<br>
 	 * Byte 8 -> 11: Error code<br>
-	 * Byte 12 -> end: payload
+	 * Byte 12 -> 15: Payload length<br>
+	 * Byte 15 -> end: Payload
 	 * 
 	 * @param data The bytes array that contains message information.
 	 * 
