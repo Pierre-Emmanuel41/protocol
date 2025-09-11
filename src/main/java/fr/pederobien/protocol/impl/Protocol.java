@@ -50,21 +50,22 @@ public class Protocol implements IProtocol {
 	 * 
 	 * @return The created request if the identifier is supported, null otherwise.
 	 */
-	public IRequest get(int identifier) {
+	protected IRequest get(int identifier) {
 		return generateRequest(identifier);
 	}
 
 	/**
 	 * Parse the content of the input wrapper. The input array shall have the
 	 * following format:<br>
-	 * <br>
-	 * Byte 0 -> 3: Message identifier<br>
+	 *
+	 * Byte 0 -> 3: Request identifier<br>
 	 * Byte 4 -> 7: Error code<br>
-	 * Byte 8 -> end: Payload<br>
+	 * Byte 8 -> 11: Payload length<br>
+	 * Byte 12 -> end: Payload
 	 * 
 	 * @param wrapper The wrapper that contains request information.
 	 */
-	public IRequest parse(ReadableByteWrapper wrapper) {
+	protected IRequest parse(ReadableByteWrapper wrapper) {
 		// Byte 0 -> 3: Request identifier
 		Request request = generateRequest(wrapper.nextInt());
 		if (request == null) {

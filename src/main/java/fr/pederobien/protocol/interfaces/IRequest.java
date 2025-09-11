@@ -40,9 +40,10 @@ public interface IRequest {
 	 * Generates a bytes array with the following format:<br>
 	 * <br>
 	 * Byte 0 -> 3: Protocol version<br>
-	 * Byte 4 -> 7: Message identifier<br>
+	 * Byte 4 -> 7: Request identifier<br>
 	 * Byte 8 -> 11: Error code<br>
-	 * Byte 12 -> end: Payload
+	 * Byte 12 -> 15: Payload length<br>
+	 * Byte 15 -> end: Payload
 	 * 
 	 * @return The bytes array to send to the remote.
 	 */
