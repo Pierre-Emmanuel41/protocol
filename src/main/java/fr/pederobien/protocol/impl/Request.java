@@ -76,14 +76,26 @@ public class Request implements IRequest {
         // Byte 8 -> 11: Error code
         byteWrapper.putInt(errorCode);
 
-        // Getting the bytes array equivalent to the payload object
-        byte[] data = wrapper.getBytes(payload);
+        if (payload == null)
+            // Byte 12 -> 15: Payload length
+            byteWrapper.putInt(0);
+        else {
+            // Getting the bytes array equivalent to the payload object
+            byte[] data = wrapper.getBytes(payload);
 
-        // Byte 12 -> 15: Payload length
-        byteWrapper.putInt(data.length);
+            // Payload does not have the correct datatype
+            if (data == null)
+                // Byte 12 -> 15: Payload length
+                byteWrapper.putInt(0);
+            else {
 
-        // Byte 12 -> end: Request payload
-        byteWrapper.put(data);
+                // Byte 12 -> 15: Payload length
+                byteWrapper.putInt(data.length);
+
+                // Byte 12 -> end: Request payload
+                byteWrapper.put(data);
+            }
+        }
 
         return byteWrapper.get();
     }
@@ -117,8 +129,9 @@ public class Request implements IRequest {
         // Byte 4 -> 7: Payload length
         int length = byteWrapper.nextInt();
 
-        // Byte 8 -> 8 + length: payload
-        payload = wrapper.parse(byteWrapper.next(length));
+        if (length > 0)
+            // Byte 8 -> 8 + length: payload
+            payload = wrapper.parse(byteWrapper.next(length));
 
         return this;
     }

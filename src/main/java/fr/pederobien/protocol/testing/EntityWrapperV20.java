@@ -8,8 +8,8 @@ public class EntityWrapperV20 implements IWrapper {
 
     @Override
     public byte[] getBytes(Object value) {
-        if (value == null || !(value instanceof Entity))
-            return new byte[0];
+        if (!(value instanceof Entity))
+            return null;
 
         ByteWrapper wrapper = ByteWrapper.create();
 
