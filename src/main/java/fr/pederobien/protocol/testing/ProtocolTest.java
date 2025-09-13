@@ -1,6 +1,7 @@
 package fr.pederobien.protocol.testing;
 
 import fr.pederobien.protocol.impl.ProtocolManager;
+import fr.pederobien.protocol.interfaces.IError;
 import fr.pederobien.protocol.interfaces.IProtocol;
 import fr.pederobien.protocol.interfaces.IProtocolManager;
 import fr.pederobien.protocol.interfaces.IRequest;
@@ -10,7 +11,7 @@ public class ProtocolTest {
 
     public static void main(String[] args) {
         IProtocolManager manager = new ProtocolManager();
-        manager.getErrorCodeFactory().register(0, "No Error");
+        manager.getErrorManager().register(Errors.NO_ERROR);
 
         // The request identifier
         int identifier = 1;
@@ -97,5 +98,33 @@ public class ProtocolTest {
             System.out.println("Received request match the sent request for protocol 2.0");
         } else
             System.out.println("An issue occurred");
+    }
+
+    private enum Errors implements IError {
+        NO_ERROR(0, "No Error");
+
+        private int code;
+        private String message;
+
+        /**
+         * Creates an error composed of a code and an explanation.
+         *
+         * @param code    The error code.
+         * @param message The error explanation.
+         */
+        private Errors(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        @Override
+        public int getCode() {
+            return code;
+        }
+
+        @Override
+        public String getMessage() {
+            return message;
+        }
     }
 }

@@ -6,28 +6,28 @@ import fr.pederobien.utils.ReadableByteWrapper;
 
 public class EntityWrapperV10 implements IWrapper {
 
-	@Override
-	public byte[] getBytes(Object value) {
-		if (value == null || !(value instanceof Entity))
-			return new byte[0];
+    @Override
+    public byte[] getBytes(Object value) {
+        if (!(value instanceof Entity))
+            return null;
 
-		ByteWrapper wrapper = ByteWrapper.create();
+        ByteWrapper wrapper = ByteWrapper.create();
 
-		Entity entity = (Entity) value;
-		wrapper.putString(entity.getType(), true);
-		wrapper.putString(entity.getName(), true);
-		wrapper.putInt(entity.getAge());
+        Entity entity = (Entity) value;
+        wrapper.putString(entity.getType(), true);
+        wrapper.putString(entity.getName(), true);
+        wrapper.putInt(entity.getAge());
 
-		return wrapper.get();
-	}
+        return wrapper.get();
+    }
 
-	@Override
-	public Object parse(byte[] bytes) {
-		ReadableByteWrapper wrapper = ReadableByteWrapper.wrap(bytes);
-		String type = wrapper.nextString(wrapper.nextInt());
-		String name = wrapper.nextString(wrapper.nextInt());
-		int age = wrapper.nextInt();
+    @Override
+    public Object parse(byte[] bytes) {
+        ReadableByteWrapper wrapper = ReadableByteWrapper.wrap(bytes);
+        String type = wrapper.nextString(wrapper.nextInt());
+        String name = wrapper.nextString(wrapper.nextInt());
+        int age = wrapper.nextInt();
 
-		return new Entity(type, name, age);
-	}
+        return new Entity(type, name, age);
+    }
 }
