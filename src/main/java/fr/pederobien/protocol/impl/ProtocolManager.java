@@ -62,20 +62,30 @@ public class ProtocolManager implements IProtocolManager {
 
     private static class ErrorManager implements IErrorManager {
         private static final String NOT_SUPPORTED = "CODE_NOT_SUPPORTED";
-        private final Map<Integer, String> errorCodes;
+        private final Map<Integer, String> errors;
 
         public ErrorManager() {
-            errorCodes = new HashMap<Integer, String>();
+            errors = new HashMap<Integer, String>();
         }
 
         @Override
         public void register(IError error) {
-            errorCodes.put(error.getCode(), error.getMessage());
+            String message = errors.get(error.getCode());
+
+            // Error not yet registered
+            if (message == null)
+                errors.put(error.getCode(), error.getMessage());
+        }
+
+        @Override
+        public void register(List<IError> errors) {
+            for (IError error : errors)
+                register(error);
         }
 
         @Override
         public String getMessage(int value) {
-            String message = errorCodes.get(value);
+            String message = errors.get(value);
             return message == null ? NOT_SUPPORTED : message;
         }
     }

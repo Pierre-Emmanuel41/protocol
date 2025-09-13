@@ -1,5 +1,7 @@
 package fr.pederobien.protocol.interfaces;
 
+import java.util.List;
+
 public interface IErrorManager {
 
     /**
@@ -8,6 +10,13 @@ public interface IErrorManager {
      * @param error The error to register.
      */
     void register(IError error);
+
+    /**
+     * Register each error from the given list if it is not yet registered.
+     *
+     * @param errors The list of errors to register.
+     */
+    void register(List<IError> errors);
 
     /**
      * Get the message associated to the given value.
