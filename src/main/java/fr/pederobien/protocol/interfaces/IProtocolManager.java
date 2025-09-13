@@ -40,5 +40,5 @@ public interface IProtocolManager {
      * @return The error code factory to store all possible errors and their
      * meaning.
      */
-    IErrorManager getErrorCodeFactory();
+    IErrorManager getErrorManager();
 }

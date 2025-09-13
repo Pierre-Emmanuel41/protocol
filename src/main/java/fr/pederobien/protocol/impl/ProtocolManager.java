@@ -56,7 +56,7 @@ public class ProtocolManager implements IProtocolManager {
     }
 
     @Override
-    public IErrorManager getErrorCodeFactory() {
+    public IErrorManager getErrorManager() {
         return manager;
     }
 

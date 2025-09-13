@@ -27,7 +27,7 @@ A picture is worth a thousand words, but in our case a complete example is alway
 
 ```java
 IProtocolManager manager = new ProtocolManager();
-manager.getErrorCodeFactory().register(Errors.NO_ERROR);
+manager.getErrorManager().register(Errors.NO_ERROR);
 
 // The request identifier
 int identifier = 1;

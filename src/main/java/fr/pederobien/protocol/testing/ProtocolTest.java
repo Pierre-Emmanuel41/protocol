@@ -11,7 +11,7 @@ public class ProtocolTest {
 
     public static void main(String[] args) {
         IProtocolManager manager = new ProtocolManager();
-        manager.getErrorCodeFactory().register(Errors.NO_ERROR);
+        manager.getErrorManager().register(Errors.NO_ERROR);
 
         // The request identifier
         int identifier = 1;
