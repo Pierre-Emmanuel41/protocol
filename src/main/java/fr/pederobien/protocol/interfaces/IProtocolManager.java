@@ -15,9 +15,11 @@ public interface IProtocolManager {
      * protocol supports the identifier then a request will be created.
      *
      * @param identifier The identifier of the request to generate.
+     * @param error      The error code of the request.
+     * @param payload    The payload of the request.
      * @return The request if the identifier is supported, null otherwise.
      */
-    IRequest get(int identifier);
+    IRequest get(IIdentifier identifier, IError error, Object payload);
 
     /**
      * Parse the given bytes array. The input array shall have the following
@@ -37,8 +39,17 @@ public interface IProtocolManager {
     IRequest parse(byte[] data);
 
     /**
-     * @return The error code factory to store all possible errors and their
-     * meaning.
+     * Register each error from the given list if it is not yet registered.
+     *
+     * @param errors The list of errors to register.
      */
-    IErrorManager getErrorManager();
+    void registerErrors(IError... errors);
+
+    /**
+     * Get the message associated to the given code.
+     *
+     * @param code The error code value
+     * @return The error object associated to the given code.
+     */
+    IError getError(int code);
 }

@@ -1,35 +1,33 @@
 package fr.pederobien.protocol.impl;
 
-import fr.pederobien.protocol.interfaces.IErrorManager;
+import fr.pederobien.protocol.interfaces.IError;
+import fr.pederobien.protocol.interfaces.IIdentifier;
 import fr.pederobien.protocol.interfaces.IRequest;
 import fr.pederobien.protocol.interfaces.IWrapper;
 import fr.pederobien.utils.ByteWrapper;
-import fr.pederobien.utils.ReadableByteWrapper;
 
 import java.util.StringJoiner;
 
 public class Request implements IRequest {
     private final float version;
-    private final IErrorManager factory;
-    private final int identifier;
+    private final IIdentifier identifier;
+    private final IError error;
+    private final Object payload;
     private final IWrapper wrapper;
-    private int errorCode;
-    private Object payload;
 
     /**
      * Creates a message to send to the remote.
      *
      * @param version    The protocol version.
-     * @param factory    The factory to get the message associated to the error code.
      * @param identifier The request identifier.
-     * @param errorCode  The request error code.
+     * @param error      The request error code.
      * @param wrapper    The request wrapper that contains the bytes generator and parser.
      */
-    public Request(float version, IErrorManager factory, int identifier, int errorCode, IWrapper wrapper) {
+    public Request(float version, IIdentifier identifier, IError error, Object payload, IWrapper wrapper) {
         this.version = version;
-        this.factory = factory;
-        this.errorCode = errorCode;
         this.identifier = identifier;
+        this.error = error;
+        this.payload = payload;
         this.wrapper = wrapper;
     }
 
@@ -39,28 +37,18 @@ public class Request implements IRequest {
     }
 
     @Override
-    public int getIdentifier() {
+    public IIdentifier getIdentifier() {
         return identifier;
     }
 
     @Override
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    @Override
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+    public IError getError() {
+        return error;
     }
 
     @Override
     public Object getPayload() {
         return payload;
-    }
-
-    @Override
-    public void setPayload(Object payload) {
-        this.payload = payload;
     }
 
     @Override
@@ -71,10 +59,10 @@ public class Request implements IRequest {
         byteWrapper.putFloat(version);
 
         // Byte 4 -> 7: Request identifier
-        byteWrapper.putInt(identifier);
+        byteWrapper.putInt(identifier.getCode());
 
         // Byte 8 -> 11: Error code
-        byteWrapper.putInt(errorCode);
+        byteWrapper.putInt(error.getCode());
 
         if (payload == null)
             // Byte 12 -> 15: Payload length
@@ -103,36 +91,9 @@ public class Request implements IRequest {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
-        joiner.add("identifier=" + getIdentifier());
-
-        String formatter = "errorCode=[value=%s,message=%s]";
-        joiner.add(String.format(formatter, getErrorCode(), factory.getMessage(getErrorCode())));
-
+        joiner.add("identifier=" + String.format("{code=%s, message=%s}", identifier.getCode(), identifier.getMessage()));
+        joiner.add("error=" + String.format("{code=%s, message=%s}", error.getCode(), error.getMessage()));
         joiner.add("payload=" + payload);
         return joiner.toString();
-    }
-
-    /**
-     * Parse the content of the input wrapper. The input array shall have the
-     * following format:<br>
-     * <p>
-     * Byte 0 -> 3: Error code
-     * Byte 4 -> 7: Payload length
-     * Byte 8 -> 8 + length: payload
-     *
-     * @param byteWrapper The wrapper that contains request information.
-     */
-    public IRequest parse(ReadableByteWrapper byteWrapper) {
-        // Byte 0 -> 3: Error code
-        errorCode = byteWrapper.nextInt();
-
-        // Byte 4 -> 7: Payload length
-        int length = byteWrapper.nextInt();
-
-        if (length > 0)
-            // Byte 8 -> 8 + length: payload
-            payload = wrapper.parse(byteWrapper.next(length));
-
-        return this;
     }
 }

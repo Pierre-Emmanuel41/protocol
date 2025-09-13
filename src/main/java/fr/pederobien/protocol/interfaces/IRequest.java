@@ -10,31 +10,17 @@ public interface IRequest {
     /**
      * @return The request identifier.
      */
-    int getIdentifier();
+    IIdentifier getIdentifier();
 
     /**
      * @return The request error code value.
      */
-    int getErrorCode();
-
-    /**
-     * Set the error code of the request.
-     *
-     * @param errorCode The value of the error code.
-     */
-    void setErrorCode(int errorCode);
+    IError getError();
 
     /**
      * @return The payload object of this request.
      */
     Object getPayload();
-
-    /**
-     * Set the payload object to sent/received from the remote.
-     *
-     * @param payload The payload of the request.
-     */
-    void setPayload(Object payload);
 
     /**
      * Generates a bytes array with the following format:<br>

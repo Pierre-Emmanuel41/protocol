@@ -13,5 +13,5 @@ public interface IProtocol {
      * @param identifier The request identifier.
      * @param wrapper    The request wrapper to generate/parse bytes.
      */
-    void register(int identifier, IWrapper wrapper);
+    void register(IIdentifier identifier, IWrapper wrapper);
 }

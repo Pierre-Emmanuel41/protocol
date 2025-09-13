@@ -1,7 +1,6 @@
 package fr.pederobien.protocol.testing;
 
 import fr.pederobien.protocol.impl.ProtocolManager;
-import fr.pederobien.protocol.interfaces.IError;
 import fr.pederobien.protocol.interfaces.IProtocol;
 import fr.pederobien.protocol.interfaces.IProtocolManager;
 import fr.pederobien.protocol.interfaces.IRequest;
@@ -11,10 +10,7 @@ public class ProtocolTest {
 
     public static void main(String[] args) {
         IProtocolManager manager = new ProtocolManager();
-        manager.getErrorManager().register(Errors.NO_ERROR);
-
-        // The request identifier
-        int identifier = 1;
+        manager.registerErrors(Errors.NO_ERROR);
 
         // Registering protocol 1.0
         IProtocol protocol10 = manager.getOrCreate(1.0f);
@@ -26,13 +22,11 @@ public class ProtocolTest {
         // When data has to be sent to the remote and the latest protocol that supports
         // the identifier 1 is the protocol 1.0 then the EntityWrapperV10 will be used
         // to generate the array of bytes.
-        protocol10.register(identifier, new EntityWrapperV10());
+        protocol10.register(Identifiers.ID_1, new EntityWrapperV10());
 
         // Getting the request associated to the latest protocol: 1.0
-        IRequest request = manager.get(identifier);
-
-        Entity payload = new Entity("Player", "Jack", 30);
-        request.setPayload(payload);
+        Object payload = new Entity("Player", "Jack", 30);
+        IRequest request = manager.get(Identifiers.ID_1, Errors.NO_ERROR, payload);
 
         String formatter = "Request with protocol 1.0: %s";
         System.out.println(String.format(formatter, request));
@@ -51,15 +45,13 @@ public class ProtocolTest {
 
         // Simulating a request being received from the remote
         IRequest received = manager.parse(data);
-        if (received.getIdentifier() == identifier && received.getPayload().equals(payload)) {
+        if (received.getIdentifier() == Identifiers.ID_1 && received.getPayload().equals(payload)) {
             System.out.println("Received request match the sent request for protocol 1.0");
         } else
             System.out.println("An issue occurred");
 
         // Simulating an evolution of the Entity properties (field city added)
         IProtocol protocol20 = manager.getOrCreate(2.0f);
-
-        identifier = 2;
 
         // The protocol 2.0 supports the request identifier 1
         // When an array of bytes needs to be parsed, the protocol version is extracted
@@ -69,13 +61,11 @@ public class ProtocolTest {
         // When data has to be sent to the remote and the latest protocol that supports
         // the identifier 1 is the protocol 2.0 then the EntityWrapperV20 will be used
         // to generate the array of bytes.
-        protocol20.register(identifier, new EntityWrapperV20());
+        protocol20.register(Identifiers.ID_2, new EntityWrapperV20());
 
         // Getting the request associated to the latest protocol: 2.0
-        request = manager.get(identifier);
-
         payload = new Entity("Player", "Jack", 30, "Sea");
-        request.setPayload(payload);
+        request = manager.get(Identifiers.ID_2, Errors.NO_ERROR, payload);
 
         // Request structure:
         // Byte 0 -> 3: Protocol version number
@@ -94,37 +84,9 @@ public class ProtocolTest {
 
         // Simulating a request being received from the remote
         received = manager.parse(data);
-        if (received.getIdentifier() == identifier && received.getPayload().equals(payload)) {
+        if (received.getIdentifier() == Identifiers.ID_2 && received.getPayload().equals(payload)) {
             System.out.println("Received request match the sent request for protocol 2.0");
         } else
             System.out.println("An issue occurred");
-    }
-
-    private enum Errors implements IError {
-        NO_ERROR(0, "No Error");
-
-        private int code;
-        private String message;
-
-        /**
-         * Creates an error composed of a code and an explanation.
-         *
-         * @param code    The error code.
-         * @param message The error explanation.
-         */
-        private Errors(int code, String message) {
-            this.code = code;
-            this.message = message;
-        }
-
-        @Override
-        public int getCode() {
-            return code;
-        }
-
-        @Override
-        public String getMessage() {
-            return message;
-        }
     }
 }
