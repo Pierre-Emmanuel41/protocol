@@ -6,7 +6,7 @@ public interface IWrapper {
      * From the input object returns an array of bytes.
      *
      * @param payload The object from which an array of bytes is created.
-     * @return An array of bytes.
+     * @return An array of bytes. A null value correspond to an error happened.
      */
     byte[] getBytes(Object payload);
 
