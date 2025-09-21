@@ -83,11 +83,8 @@ public class Protocol implements IProtocol {
         // Byte 8 -> 11: Payload length
         int length = wrapper.nextInt();
 
-        Object payload = null;
-
-        if (length > 0)
-            // Byte 12 -> 12 + length: payload
-            payload = entry.getValue().parse(wrapper.next(length));
+        // Byte 12 -> 12 + length: payload
+        Object payload = entry.getValue().parse(wrapper.next(length));
 
         return new Request(version, entry.getKey(), error, payload, entry.getValue());
     }
