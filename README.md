@@ -26,8 +26,10 @@ Executing the batch file <code>deploy.bat</code> will download each dependency a
 A picture is worth a thousand words, but in our case a complete example is always better than a big description to understand how easy it is to create different communication protocol and to generate an array of bytes, or parsing an array of bytes, depending on the protocol version and on the payload to send:
 
 ```java
+Logger.instance().debug(true).colorized(true).newLine(true).timeStamp(false);
+
 IProtocolManager manager = new ProtocolManager();
-manager.register(Errors.NO_ERROR);
+manager.registerErrors(Errors.NO_ERROR);
 
 // Registering protocol 1.0
 IProtocol protocol10 = manager.getOrCreate(1.0f);
@@ -45,27 +47,16 @@ protocol10.register(Identifiers.ID_1, new EntityWrapperV10());
 Object payload = new Entity("Player", "Jack", 30);
 IRequest request = manager.get(Identifiers.ID_1, Errors.NO_ERROR, payload);
 
-String formatter = "Request with protocol 1.0: %s";
-System.out.println(String.format(formatter, request));
-
 // Simulating a request being sent to the remote
 byte[] data = request.getBytes();
 
-// Request structure:
-// Byte 0 -> 3: Protocol version number
-// Byte 4 -> 7: Request identifier
-// Byte 8 -> 11: Error code
-// Byte 12 -> 15: Payload length
-// Byte 16 -> 16 + length: Payload
-formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
-System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
+String formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
+Logger.info(formatter, ByteWrapper.wrap(data), data.length);
 
 // Simulating a request being received from the remote
 IRequest received = manager.parse(data);
-if (received.getIdentifier() == Identifiers.ID_1.getCode() && received.getPayload().equals(payload)) {
-    System.out.println("Received request match the sent request for protocol 1.0");
-} else
-    System.out.println("An issue occurred");
+if (received.getIdentifier() != Identifiers.ID_1 || !received.getPayload().equals(payload))
+    Logger.error("An issue occurred");
 
 // Simulating an evolution of the Entity properties (field city added)
 IProtocol protocol20 = manager.getOrCreate(2.0f);
@@ -84,38 +75,27 @@ protocol20.register(Identifiers.ID_2, new EntityWrapperV20());
 payload = new Entity("Player", "Jack", 30, "Sea");
 request = manager.get(Identifiers.ID_2, Errors.NO_ERROR, payload);
 
-// Request structure:
-// Byte 0 -> 3: Protocol version number
-// Byte 4 -> 7: Request identifier
-// Byte 8 -> 11: Error code
-// Byte 12 -> 15: Payload length
-// Byte 16 -> 16 + length: Payload
-formatter = "Request with protocol 2.0: %s";
-System.out.println(String.format(formatter, request));
-
 // Simulating a request being sent to the remote
 data = request.getBytes();
 
 formatter = "Bytes with protocol 2.0: %s, size in bytes: %s";
-System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
+Logger.info(formatter, ByteWrapper.wrap(data), data.length);
 
 // Simulating a request being received from the remote
 received = manager.parse(data);
-if (received.getIdentifier() == Identifiers.ID_2.getCode() && received.getPayload().equals(payload)) {
-    System.out.println("Received request match the sent request for protocol 2.0");
-} else
-    System.out.println("An issue occurred");
+if (received.getIdentifier() != Identifiers.ID_2 || !received.getPayload().equals(payload))
+    Logger.error("An issue occurred");
 ```
 
 The Output:
 
 ```
-Request with protocol 1.0: {identifier={Code=1, Message=Dummy ID 1},error={Code=0, Message=No Error},payload={type=Player,name=Jack,age=30,city=Not defined}}
-Bytes with protocol 1.0: [63,-128,0,0,0,0,0,1,0,0,0,0,0,0,0,22,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30], size in bytes: 38
-Received request match the sent request for protocol 1.0
-Request with protocol 2.0: {identifier={Code=2, Message=Dummy_ID_2},error={Code=0, Message=No Error},payload={type=Player,name=Jack,age=30,city=Sea}}
-Bytes with protocol 2.0: [64,0,0,0,0,0,0,2,0,0,0,0,0,0,0,29,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30,0,0,0,3,83,101,97], size in bytes: 45
-Received request match the sent request for protocol 2.0
+ [DEBUG] Created request: {version=1.0,identifier={code=1, message=Dummy ID 1},error={code=0, message=No Error},payload={type=Player,name=Jack,age=30,city=Not defined}}
+ [INFO] Bytes with protocol 1.0: [63,-128,0,0,0,0,0,1,0,0,0,0,0,0,0,22,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30], size in bytes: 38
+ [DEBUG] Parsed request: {version=1.0,identifier={code=1, message=Dummy ID 1},error={code=0, message=No Error},payload={type=Player,name=Jack,age=30,city=Not defined}}
+ [DEBUG] Created request: {version=2.0,identifier={code=2, message=Dummy_ID_2},error={code=0, message=No Error},payload={type=Player,name=Jack,age=30,city=Sea}}
+ [INFO] Bytes with protocol 2.0: [64,0,0,0,0,0,0,2,0,0,0,0,0,0,0,29,0,0,0,6,80,108,97,121,101,114,0,0,0,4,74,97,99,107,0,0,0,30,0,0,0,3,83,101,97], size in bytes: 45
+ [DEBUG] Parsed request: {version=2.0,identifier={code=2, message=Dummy_ID_2},error={code=0, message=No Error},payload={type=Player,name=Jack,age=30,city=Sea}}
 ```
 
 The classes referenced in this example can be found in the testing folder.

@@ -91,6 +91,7 @@ public class Request implements IRequest {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
+        joiner.add("version=" + version);
         joiner.add("identifier=" + String.format("{code=%s, message=%s}", identifier.getCode(), identifier.getMessage()));
         joiner.add("error=" + String.format("{code=%s, message=%s}", error.getCode(), error.getMessage()));
         joiner.add("payload=" + payload);

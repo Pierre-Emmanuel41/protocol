@@ -5,10 +5,13 @@ import fr.pederobien.protocol.interfaces.IProtocol;
 import fr.pederobien.protocol.interfaces.IProtocolManager;
 import fr.pederobien.protocol.interfaces.IRequest;
 import fr.pederobien.utils.ByteWrapper;
+import fr.pederobien.utils.event.Logger;
 
 public class ProtocolTest {
 
     public static void main(String[] args) {
+        Logger.instance().debug(true).colorized(true).newLine(true).timeStamp(false);
+
         IProtocolManager manager = new ProtocolManager();
         manager.registerErrors(Errors.NO_ERROR);
 
@@ -28,27 +31,16 @@ public class ProtocolTest {
         Object payload = new Entity("Player", "Jack", 30);
         IRequest request = manager.get(Identifiers.ID_1, Errors.NO_ERROR, payload);
 
-        String formatter = "Request with protocol 1.0: %s";
-        System.out.println(String.format(formatter, request));
-
         // Simulating a request being sent to the remote
         byte[] data = request.getBytes();
 
-        // Request structure:
-        // Byte 0 -> 3: Protocol version number
-        // Byte 4 -> 7: Request identifier
-        // Byte 8 -> 11: Error code
-        // Byte 12 -> 15: Payload length
-        // Byte 16 -> 16 + length: Payload
-        formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
-        System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
+        String formatter = "Bytes with protocol 1.0: %s, size in bytes: %s";
+        Logger.info(formatter, ByteWrapper.wrap(data), data.length);
 
         // Simulating a request being received from the remote
         IRequest received = manager.parse(data);
-        if (received.getIdentifier() == Identifiers.ID_1 && received.getPayload().equals(payload)) {
-            System.out.println("Received request match the sent request for protocol 1.0");
-        } else
-            System.out.println("An issue occurred");
+        if (received.getIdentifier() != Identifiers.ID_1 || !received.getPayload().equals(payload))
+            Logger.error("An issue occurred");
 
         // Simulating an evolution of the Entity properties (field city added)
         IProtocol protocol20 = manager.getOrCreate(2.0f);
@@ -67,26 +59,15 @@ public class ProtocolTest {
         payload = new Entity("Player", "Jack", 30, "Sea");
         request = manager.get(Identifiers.ID_2, Errors.NO_ERROR, payload);
 
-        // Request structure:
-        // Byte 0 -> 3: Protocol version number
-        // Byte 4 -> 7: Request identifier
-        // Byte 8 -> 11: Error code
-        // Byte 12 -> 15: Payload length
-        // Byte 16 -> 16 + length: Payload
-        formatter = "Request with protocol 2.0: %s";
-        System.out.println(String.format(formatter, request));
-
         // Simulating a request being sent to the remote
         data = request.getBytes();
 
         formatter = "Bytes with protocol 2.0: %s, size in bytes: %s";
-        System.out.println(String.format(formatter, ByteWrapper.wrap(data), data.length));
+        Logger.info(formatter, ByteWrapper.wrap(data), data.length);
 
         // Simulating a request being received from the remote
         received = manager.parse(data);
-        if (received.getIdentifier() == Identifiers.ID_2 && received.getPayload().equals(payload)) {
-            System.out.println("Received request match the sent request for protocol 2.0");
-        } else
-            System.out.println("An issue occurred");
+        if (received.getIdentifier() != Identifiers.ID_2 || !received.getPayload().equals(payload))
+            Logger.error("An issue occurred");
     }
 }

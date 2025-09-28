@@ -2,6 +2,7 @@ package fr.pederobien.protocol.impl;
 
 import fr.pederobien.protocol.interfaces.*;
 import fr.pederobien.utils.ReadableByteWrapper;
+import fr.pederobien.utils.event.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,9 @@ public class Protocol implements IProtocol {
         if (wrapper == null)
             return null;
 
-        return new Request(version, identifier, error, payload, wrapper);
+        IRequest request = new Request(version, identifier, error, payload, wrapper);
+        Logger.debug("Created request: %s", request);
+        return request;
     }
 
     /**
@@ -86,7 +89,9 @@ public class Protocol implements IProtocol {
         // Byte 12 -> 12 + length: payload
         Object payload = entry.getValue().parse(wrapper.next(length));
 
-        return new Request(version, entry.getKey(), error, payload, entry.getValue());
+        IRequest request = new Request(version, entry.getKey(), error, payload, entry.getValue());
+        Logger.debug("Parsed request: %s", request);
+        return request;
     }
 
     /**
