@@ -1,12 +1,12 @@
 package fr.pederobien.protocol.impl;
 
+import java.util.StringJoiner;
+
 import fr.pederobien.protocol.interfaces.IError;
 import fr.pederobien.protocol.interfaces.IIdentifier;
 import fr.pederobien.protocol.interfaces.IRequest;
 import fr.pederobien.protocol.interfaces.IWrapper;
 import fr.pederobien.utils.ByteWrapper;
-
-import java.util.StringJoiner;
 
 public class Request implements IRequest {
 	private final float version;

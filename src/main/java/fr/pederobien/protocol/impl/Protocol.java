@@ -1,11 +1,15 @@
 package fr.pederobien.protocol.impl;
 
-import fr.pederobien.protocol.interfaces.*;
-import fr.pederobien.utils.ReadableByteWrapper;
-import fr.pederobien.utils.event.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import fr.pederobien.protocol.interfaces.IError;
+import fr.pederobien.protocol.interfaces.IIdentifier;
+import fr.pederobien.protocol.interfaces.IProtocol;
+import fr.pederobien.protocol.interfaces.IRequest;
+import fr.pederobien.protocol.interfaces.IWrapper;
+import fr.pederobien.utils.ReadableByteWrapper;
+import fr.pederobien.utils.event.Logger;
 
 public class Protocol implements IProtocol {
 	private final float version;
@@ -40,15 +44,8 @@ public class Protocol implements IProtocol {
 		wrappers.put(identifier, wrapper);
 	}
 
-	/**
-	 * Creates a new request to send to the remote if the given identifier is supported by the protocol.
-	 *
-	 * @param identifier The identifier of the request to create.
-	 * @param error      The error code of the request.
-	 * @param payload    The payload of the request
-	 * @return The created request if the identifier is supported, null otherwise.
-	 */
-	protected IRequest get(IIdentifier identifier, IError error, Object payload) {
+	@Override
+	public IRequest get(IIdentifier identifier, IError error, Object payload) {
 		IWrapper wrapper = wrappers.get(identifier);
 		if (wrapper == null)
 			return null;
