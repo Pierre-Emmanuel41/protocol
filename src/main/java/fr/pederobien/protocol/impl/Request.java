@@ -97,4 +97,19 @@ public class Request implements IRequest {
 		joiner.add("payload=" + payload);
 		return joiner.toString();
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Request))
+			return false;
+
+		Request other = (Request) obj;
+		boolean equals = version == other.getVersion() && identifier == other.getIdentifier() && error == other.getError();
+		if (payload != null && other.getPayload() != null)
+			equals = equals && payload.equals(other.getPayload());
+		else if ((payload != null && other.getPayload() == null) || (payload == null && other.getPayload() != null))
+			return false;
+
+		return equals;
+	}
 }
