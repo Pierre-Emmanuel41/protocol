@@ -51,7 +51,7 @@ public class Protocol implements IProtocol {
 			return null;
 
 		IRequest request = new Request(version, identifier, error, payload, wrapper);
-		Logger.debug("Created request: %s", request);
+		Logger.debug(1, "Created request: %s", request);
 		return request;
 	}
 
@@ -85,7 +85,7 @@ public class Protocol implements IProtocol {
 		Object payload = entry.getValue().parse(wrapper.next(length));
 
 		IRequest request = new Request(version, entry.getKey(), error, payload, entry.getValue());
-		Logger.debug("Parsed request: %s", request);
+		Logger.debug(1, "Parsed request: %s", request);
 		return request;
 	}
 

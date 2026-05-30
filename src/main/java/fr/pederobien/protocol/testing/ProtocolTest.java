@@ -10,7 +10,7 @@ import fr.pederobien.utils.event.Logger;
 public class ProtocolTest {
 
 	public static void main(String[] args) {
-		Logger.instance().debug(true).colorized(true).newLine(true).timeStamp(false);
+		Logger.setPrintInColor(true);
 
 		IProtocolManager manager = new ProtocolManager();
 		manager.registerErrors(Errors.NO_ERROR);
